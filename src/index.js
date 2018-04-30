@@ -10,35 +10,8 @@ const COLORS = {
   grad4: "#196127"
 };
 
-function getColor(quartiles, count) {
-  if (isNaN(count)) {
-    return COLORS.empty;
-  } else if (count === 0) {
-    return COLORS.grad0;
-  } else if (count <= quartiles[1]) {
-    return COLORS.grad1;
-  } else if (count <= quartiles[2]) {
-    return COLORS.grad2;
-  } else if (count <= quartiles[3]) {
-    return COLORS.grad3;
-  }
-  return COLORS.grad4;
-}
-
-function getDateCount(date) {
-  return mockData[date];
-}
-
-function calculateQuartiles(entries) {
-  const values = entries
-    .reduce((list, val) => [...list, ...val.map(item => item.count)], [])
-    .filter(num => !isNaN(num));
-
-  const result = [];
-  for (let i = 0; i < 5; i += 1) {
-    result.push(i * Math.max(...values) / 5 - 1);
-  }
-  return result;
+function getDateInfo(date) {
+  return mockData.contributions.find(contrib => contrib.date === date);
 }
 
 const canvas = document.getElementById("graph");
@@ -71,7 +44,7 @@ function draw(today = moment(), i = 0) {
     const date = nextDate.format(FORMAT);
     firstRowDates.push({
       date,
-      count: getDateCount(date)
+      info: getDateInfo(date)
     });
   }
 
@@ -85,13 +58,11 @@ function draw(today = moment(), i = 0) {
           .format(FORMAT);
         return {
           date,
-          count: getDateCount(date)
+          info: getDateInfo(date)
         };
       })
     );
   }
-
-  const quartiles = calculateQuartiles(graphEntries);
 
   for (let y = 0; y < graphEntries.length; y += 1) {
     for (let x = 0; x < graphEntries[y].length; x += 1) {
@@ -99,7 +70,7 @@ function draw(today = moment(), i = 0) {
       if (moment(day.date) > today) {
         continue;
       }
-      ctx.fillStyle = getColor(quartiles, day.count);
+      ctx.fillStyle = day.info.color;
       ctx.fillRect(
         (boxWidth + boxMargin) * x,
         yearDistance * i + (boxWidth + boxMargin) * y,
