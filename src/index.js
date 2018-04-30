@@ -58,10 +58,12 @@ function draw(ctx, year, offsetX = 0, offsetY = 0) {
     );
   }
 
+  const count = new Intl.NumberFormat().format(year.total);
+
   ctx.fillStyle = "#000000";
   ctx.font = "10px 'IBM Plex Mono'";
   ctx.fillText(
-    `${year.year}: ${year.total} Contributions`,
+    `${year.year}: ${count} Contributions`,
     offsetX,
     offsetY + textHeight / 2
   );
