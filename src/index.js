@@ -15,20 +15,24 @@ function getDateInfo(date) {
   return mockData.contributions.find(contrib => contrib.date === date);
 }
 
-const canvas = document.getElementById("graph");
-const ctx = canvas.getContext("2d");
-canvas.width = 1400;
-canvas.height = 2000;
-canvas.style.width = "700px";
-canvas.style.height = "1000px";
+function getTotalCount(graphEntries) {
+  return graphEntries.reduce((total, row) => {
+    return (
+      total +
+      row.reduce((rowTotal, col) => {
+        return rowTotal + (col.info ? col.info.count : 0);
+      }, 0)
+    );
+  }, 0);
+}
 
-ctx.scale(2, 2);
+const canvas = document.getElementById("graph");
 
 const boxWidth = 10;
 const boxMargin = 2;
-const yearDistance = 100;
+const yearDistance = 110;
 
-function draw(year, i = 0) {
+function draw(year, index = 0) {
   const today = moment(year.range.end);
   const start = moment(year.range.start).day(-1);
   const firstDate = start.clone();
@@ -61,6 +65,13 @@ function draw(year, i = 0) {
     );
   }
 
+  const yearMargin = yearDistance * index;
+  const count = getTotalCount(graphEntries);
+
+  ctx.fillStyle = "#000000";
+  ctx.font = "10px Menlo";
+  ctx.fillText(`${year.year}: ${count} Contributions`, 0, yearMargin + 8);
+
   for (let y = 0; y < graphEntries.length; y += 1) {
     for (let x = 0; x < graphEntries[y].length; x += 1) {
       const day = graphEntries[y][x];
@@ -70,12 +81,20 @@ function draw(year, i = 0) {
       ctx.fillStyle = day.info.color;
       ctx.fillRect(
         (boxWidth + boxMargin) * x,
-        yearDistance * i + (boxWidth + boxMargin) * y,
+        yearMargin + 15 + (boxWidth + boxMargin) * y,
         10,
         10
       );
     }
   }
 }
+
+const ctx = canvas.getContext("2d");
+canvas.width = 1400;
+canvas.height = 2000;
+canvas.style.width = "700px";
+canvas.style.height = "1000px";
+
+ctx.scale(2, 2);
 
 mockData.years.forEach((year, i) => draw(year, i));
