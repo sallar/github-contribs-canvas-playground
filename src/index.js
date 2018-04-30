@@ -1,6 +1,7 @@
 import moment from "moment";
 import mockData from "./mock.json";
 
+const FORMAT = "YYYY-MM-DD";
 const COLORS = {
   empty: "transparent",
   grad0: "#ebedf0",
@@ -27,14 +28,10 @@ const boxWidth = 10;
 const boxMargin = 2;
 const yearDistance = 100;
 
-function draw(today = moment(), i = 0) {
-  const FORMAT = "YYYY-MM-DD";
-  const start = moment(today).subtract(1, "year");
+function draw(year, i = 0) {
+  const today = moment(year.range.end);
+  const start = moment(year.range.start).day(-1);
   const firstDate = start.clone();
-
-  if (firstDate.day() !== 6) {
-    firstDate.day(firstDate.day() + 1 % 7);
-  }
 
   const nextDate = firstDate.clone();
   const firstRowDates = [];
@@ -81,11 +78,4 @@ function draw(today = moment(), i = 0) {
   }
 }
 
-draw();
-draw(moment("2017-12-31"), 1);
-draw(moment("2016-12-31"), 2);
-draw(moment("2015-12-31"), 3);
-draw(moment("2014-12-31"), 4);
-draw(moment("2013-12-31"), 5);
-draw(moment("2012-12-31"), 6);
-draw(moment("2011-12-31"), 7);
+mockData.years.forEach((year, i) => draw(year, i));
