@@ -1,31 +1,11 @@
 import moment from "moment";
 import mockData from "./mock.json";
 
-const FORMAT = "YYYY-MM-DD";
-const COLORS = {
-  empty: "transparent",
-  grad0: "#ebedf0",
-  grad1: "#c6e48b",
-  grad2: "#7bc96f",
-  grad3: "#239a3b",
-  grad4: "#196127"
-};
-
 function getDateInfo(date) {
   return mockData.contributions.find(contrib => contrib.date === date);
 }
 
-function getTotalCount(graphEntries) {
-  return graphEntries.reduce((total, row) => {
-    return (
-      total +
-      row.reduce((rowTotal, col) => {
-        return rowTotal + (col.info ? col.info.count : 0);
-      }, 0)
-    );
-  }, 0);
-}
-
+const FORMAT = "YYYY-MM-DD";
 const boxWidth = 10;
 const boxMargin = 2;
 const textHeight = 15;
@@ -78,12 +58,10 @@ function draw(ctx, year, offsetX = 0, offsetY = 0) {
     );
   }
 
-  const count = getTotalCount(graphEntries);
-
   ctx.fillStyle = "#000000";
   ctx.font = "10px 'IBM Plex Mono'";
   ctx.fillText(
-    `${year.year}: ${count} Contributions`,
+    `${year.year}: ${year.total} Contributions`,
     offsetX,
     offsetY + textHeight / 2
   );
