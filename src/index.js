@@ -30,6 +30,7 @@ const canvas = document.getElementById("graph");
 
 const boxWidth = 10;
 const boxMargin = 2;
+const textMargin = 15;
 const yearDistance = 110;
 
 function draw(year, index = 0) {
@@ -70,7 +71,11 @@ function draw(year, index = 0) {
 
   ctx.fillStyle = "#000000";
   ctx.font = "10px Menlo";
-  ctx.fillText(`${year.year}: ${count} Contributions`, 0, yearMargin + 8);
+  ctx.fillText(
+    `${year.year}: ${count} Contributions`,
+    0,
+    yearMargin + textMargin / 2
+  );
 
   for (let y = 0; y < graphEntries.length; y += 1) {
     for (let x = 0; x < graphEntries[y].length; x += 1) {
@@ -81,7 +86,7 @@ function draw(year, index = 0) {
       ctx.fillStyle = day.info.color;
       ctx.fillRect(
         (boxWidth + boxMargin) * x,
-        yearMargin + 15 + (boxWidth + boxMargin) * y,
+        yearMargin + textMargin + (boxWidth + boxMargin) * y,
         10,
         10
       );
@@ -90,11 +95,15 @@ function draw(year, index = 0) {
 }
 
 const ctx = canvas.getContext("2d");
-canvas.width = 1400;
-canvas.height = 2000;
-canvas.style.width = "700px";
-canvas.style.height = "1000px";
+const height = mockData.years.length * yearDistance;
+const width = 54 * (boxWidth + boxMargin);
+const scaleFactor = window.devicePixelRatio || 1;
 
-ctx.scale(2, 2);
+canvas.width = width * scaleFactor;
+canvas.height = height * scaleFactor;
+canvas.style.width = `${width}px`;
+canvas.style.height = `${height}px`;
+
+ctx.scale(scaleFactor, scaleFactor);
 
 mockData.years.forEach((year, i) => draw(year, i));
