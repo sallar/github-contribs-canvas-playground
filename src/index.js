@@ -63,7 +63,7 @@ function draw(ctx, year, offsetX = 0, offsetY = 0) {
   ctx.fillStyle = "#000000";
   ctx.font = "10px 'IBM Plex Mono'";
   ctx.fillText(
-    `${year.year}: ${count} Contributions`,
+    `${year.year}: ${count} Contribution${year.total === 1 ? "" : "s"}`,
     offsetX,
     offsetY + textHeight / 2
   );
