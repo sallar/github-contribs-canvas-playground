@@ -26,14 +26,26 @@ function getTotalCount(graphEntries) {
   }, 0);
 }
 
-const canvas = document.getElementById("graph");
-
 const boxWidth = 10;
 const boxMargin = 2;
-const textMargin = 15;
-const yearDistance = 110;
+const textHeight = 15;
+const canvasMargin = 20;
+const yearHeight = textHeight + (boxWidth + boxMargin) * 7 + canvasMargin;
+const height = mockData.years.length * yearHeight + canvasMargin;
+const width = 54 * (boxWidth + boxMargin) + canvasMargin * 2;
+const scaleFactor = window.devicePixelRatio || 1;
 
-function draw(year, index = 0) {
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+
+canvas.width = width * scaleFactor;
+canvas.height = height * scaleFactor;
+canvas.style.width = `${width}px`;
+canvas.style.height = `${height}px`;
+
+ctx.scale(scaleFactor, scaleFactor);
+
+function draw(ctx, year, offsetX = 0, offsetY = 0) {
   const today = moment(year.range.end);
   const start = moment(year.range.start).day(-1);
   const firstDate = start.clone();
@@ -66,15 +78,14 @@ function draw(year, index = 0) {
     );
   }
 
-  const yearMargin = yearDistance * index;
   const count = getTotalCount(graphEntries);
 
   ctx.fillStyle = "#000000";
-  ctx.font = "10px Menlo";
+  ctx.font = "10px 'IBM Plex Mono'";
   ctx.fillText(
     `${year.year}: ${count} Contributions`,
-    0,
-    yearMargin + textMargin / 2
+    offsetX,
+    offsetY + textHeight / 2
   );
 
   for (let y = 0; y < graphEntries.length; y += 1) {
@@ -85,8 +96,8 @@ function draw(year, index = 0) {
       }
       ctx.fillStyle = day.info.color;
       ctx.fillRect(
-        (boxWidth + boxMargin) * x,
-        yearMargin + textMargin + (boxWidth + boxMargin) * y,
+        offsetX + (boxWidth + boxMargin) * x,
+        offsetY + textHeight + (boxWidth + boxMargin) * y,
         10,
         10
       );
@@ -94,16 +105,8 @@ function draw(year, index = 0) {
   }
 }
 
-const ctx = canvas.getContext("2d");
-const height = mockData.years.length * yearDistance;
-const width = 54 * (boxWidth + boxMargin);
-const scaleFactor = window.devicePixelRatio || 1;
-
-canvas.width = width * scaleFactor;
-canvas.height = height * scaleFactor;
-canvas.style.width = `${width}px`;
-canvas.style.height = `${height}px`;
-
-ctx.scale(scaleFactor, scaleFactor);
-
-mockData.years.forEach((year, i) => draw(year, i));
+mockData.years.forEach((year, i) => {
+  const offsetY = yearHeight * i + canvasMargin;
+  const offsetX = canvasMargin;
+  draw(ctx, year, offsetX, offsetY);
+});
