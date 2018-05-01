@@ -8,6 +8,7 @@ const FORMAT = "YYYY-MM-DD";
 const boxWidth = 10;
 const boxMargin = 2;
 const textHeight = 15;
+const headerHeight = 70;
 const canvasMargin = 20;
 const yearHeight = textHeight + (boxWidth + boxMargin) * 7 + canvasMargin;
 const scaleFactor = window.devicePixelRatio || 1;
@@ -52,7 +53,7 @@ function drawYear(ctx, year, offsetX = 0, offsetY = 0, data) {
   ctx.fillText(
     `${year.year}: ${count} Contribution${year.total === 1 ? "" : "s"}`,
     offsetX,
-    offsetY + textHeight / 2
+    offsetY
   );
 
   for (let y = 0; y < graphEntries.length; y += 1) {
@@ -72,8 +73,20 @@ function drawYear(ctx, year, offsetX = 0, offsetY = 0, data) {
   }
 }
 
-export function drawContributions(canvas, data) {
-  const height = data.years.length * yearHeight + canvasMargin;
+function drawMetaData(ctx, width, height) {
+  ctx.textBaseline = "hanging";
+  ctx.font = "20px IBM Plex Mono";
+  ctx.fillText("@sallar on Github", canvasMargin, canvasMargin);
+
+  ctx.beginPath();
+  ctx.moveTo(canvasMargin, 55);
+  ctx.lineTo(width - canvasMargin, 55);
+  ctx.strokeStyle = "#EBEDF0";
+  ctx.stroke();
+}
+
+export function drawContributions(canvas, data, username) {
+  const height = data.years.length * yearHeight + canvasMargin + headerHeight;
   const width = 54 * (boxWidth + boxMargin) + canvasMargin * 2;
   canvas.width = width * scaleFactor;
   canvas.height = height * scaleFactor;
@@ -83,8 +96,10 @@ export function drawContributions(canvas, data) {
   const ctx = canvas.getContext("2d");
   ctx.scale(scaleFactor, scaleFactor);
 
+  drawMetaData(ctx, width, height);
+
   data.years.forEach((year, i) => {
-    const offsetY = yearHeight * i + canvasMargin;
+    const offsetY = yearHeight * i + canvasMargin + headerHeight;
     const offsetX = canvasMargin;
     drawYear(ctx, year, offsetX, offsetY, data);
   });
